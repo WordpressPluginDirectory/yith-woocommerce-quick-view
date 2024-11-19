@@ -14,7 +14,7 @@ while ( have_posts() ) :
 	?>
 
 	<div class="product">
-
+	<?php if ( ! post_password_required() ) : ?>
 		<div id="product-<?php the_ID(); ?>" <?php post_class( 'product' ); ?>>
 
 			<?php do_action( 'yith_wcqv_product_image' ); ?>
@@ -26,7 +26,9 @@ while ( have_posts() ) :
 			</div>
 
 		</div>
-
+	<?php else :
+			echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		endif; ?>
 	</div>
 	<?php
 endwhile; // end of the loop.

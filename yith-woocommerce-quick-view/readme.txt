@@ -2,30 +2,62 @@
 Contributors: yithemes
 Tags: woocommerce, quick view, woocommerce quick view, products quick view
 Requires PHP: 7.4
-Requires at least: 6.4
-Tested up to: 6.6
-Stable tag: 1.43.0
+Requires at least: 6.5
+Tested up to: 6.7
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin adds the possibility to have a quick preview of the products right from product list
 
 == Description ==
-Sometimes the halfway is better: what if you are looking to a product in a list and its image is still too small?
+**Show a product preview in a modal window to improve your customers’ shopping experience**
 
-You have to open its product page, waiting for its loading and finally observe what you are interested into.
-So why don't use a simple way to look immediately at the product's distinctiveness? Here it is what Quick View can offer you.
+**YITH WooCommerce Quick View** is the free solution to simplify the product viewing and buying process for your customers.
+In fact, the plugin allows you to show a preview of your products in a modal window, directly on the shop page.
 
-People are more attracted to what they can see clearly. And often the classic product lists are not enough to understand the real value of a product.
-That's when Quick View strikes successfully! Your clients will be free to look in a better way your products, reading also a small description with all the most important features and qualities you want to underline.
-In this way, they will be more focused on what they really want and they will proceed easily to the purchase step.
+This way, with just one click, your customers can view available sizes and colors, read product descriptions, and add items to their shopping carts without leaving the catalog. This makes comparing products and purchasing multiple items a quick and easy process.
 
-**Main features:**
+And thanks to the new 100% mobile friendly design, YITH WooCommerce Quick View also improves the shopping experience for customers who purchase using smartphones and tablets.
 
-* Add a button in product loop to open a modal window with the product summary using AJAX
-* Customize style of modal
+== Free version features ==
 
-Full documentation is available [here](https://docs.yithemes.com/yith-woocommerce-quick-view/).
+* Use a text button to preview the product and customize the text
+* Display the button on the page, below the “Add to cart” button
+* Enable the Quick View on mobile devices (100% mobile friendly design)
+* Display the product Quick View in a modal window
+* Choose if and what description to show (short or long)
+* Choose the size of the product image
+* Set the background color of the Quick View
+* Set the background overlay color
+* Set the color of the close icon
+* Set the colors of the “Quick View” button
+
+Want to see the plugin in action? Take a look at the [live demo of the free version >](https://plugins.yithemes.com/yith-woocommerce-quick-view-free/).
+
+== Need extra features? Upgrade to premium! ==
+With the free version of YITH WooCommerce Quick View you have everything you need to show a
+quick overview of your products and improve the user experience of your shop.
+But if you're looking for advanced options and more versatility, we recommend **upgrading to the premium version** of the plugin.
+
+== Premium version features:  ==
+
+* Use a button with an icon
+* Upload a custom icon for the “Quick View” button
+* Display the button when hovering over the product image
+* Use a shortcode or Gutenberg block to allow users to preview a specific product anywhere in your store
+* Show the product Quick View in a cascading section or in a sidebar
+* Select an opening animation
+* Configure modal window height and width
+* Enable product navigation
+* Choose which product information to show or hide (image, name, rating, price, “Add to cart” button, etc.)
+* Choose whether to hide the product image gallery, show it in a classic style, or enable a slider
+* Display a link or a button to redirect the user to the product detail page
+* Choose whether to close the Quick View or redirect the user to the Checkout page after adding the product to the cart
+* Enable social icons to share the product Quick View
+* Customize the “Add to cart” button
+
+[Check out the live demo of the premium version >](https://plugins.yithemes.com/yith-woocommerce-quick-view)
 
 == Installation ==
 
@@ -41,13 +73,19 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Screenshots ==
 
-1. The plugin admin page.
-2. The quick view button in shop page.
+1. General settings
+2. Customization options
+2. Quick view button on shop page
 3. The quick view modal.
 
 == Changelog ==
-= 1.43.0 = Released 16 September 2024
+= 2.0.0 = Released 19 November 2024
+* New: support for WordPress 6.7
+* New: support for WooCommerce 9.4
+* New: Plugin panel restyling
+* Update: YITH plugin framework
 
+= 1.43.0 = Released 16 September 2024
 * New: support for WooCommerce 9.3
 
 = 1.42.0 = Released 22 August 2024
@@ -550,19 +588,6 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 = 1.0.0 = Released 17 February 2015
 
 * Initial release
-
-== Suggestions ==
-
-If you have suggestions about how to improve YITH WooCommerce Quick View, you can [write us](mailto:plugins@yithemes.com "Your Inspiration Themes") so we can bundle them into YITH WooCommerce Quick View.
-
-== Translators ==
-
-= Available Languages =
-* English
-* Italian
-
-If you can't find this plugin in your language and want to translate it, use the dedicated tool at [Translating WordPress](https://translate.wordpress.org/locale/it/default/wp-plugins/yith-woocommerce-quick-view "Translating WordPress").
-Or, if you have created your own language pack, or have an update for an existing one, you can send it as an email attachment from our [Contacts page](http://yithemes.com/contact/ "Your Inspiration Themes") and we will bundle into YITH WooCommerce Quick View.
 
 == Upgrade notice ==
 

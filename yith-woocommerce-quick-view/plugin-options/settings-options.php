@@ -20,18 +20,10 @@ $settings = array(
 			'id'    => 'yith-wcqv-general-options',
 		),
 
-		'enable-quick-view'        => array(
-			'id'        => 'yith-wcqv-enable',
-			'name'      => __( 'Enable Quick View', 'yith-woocommerce-quick-view' ),
-			'type'      => 'yith-field',
-			'yith-type' => 'onoff',
-			'default'   => 'yes',
-		),
-
 		'enable-quick-view-mobile' => array(
 			'id'        => 'yith-wcqv-enable-mobile',
 			'name'      => __( 'Enable Quick View on mobile', 'yith-woocommerce-quick-view' ),
-			'desc'      => __( 'Enable quick view features on mobile device too', 'yith-woocommerce-quick-view' ),
+			'desc'      => __( 'Enable quick view features for mobile devices.', 'yith-woocommerce-quick-view' ),
 			'type'      => 'yith-field',
 			'yith-type' => 'onoff',
 			'default'   => 'yes',
@@ -39,8 +31,8 @@ $settings = array(
 
 		'quick-view-label'         => array(
 			'id'        => 'yith-wcqv-button-label',
-			'name'      => __( 'Quick View Button Label', 'yith-woocommerce-quick-view' ),
-			'desc'      => __( 'Label for the quick view button in the WooCommerce loop.', 'yith-woocommerce-quick-view' ),
+			'name'      => __( '"Quick view" button label', 'yith-woocommerce-quick-view' ),
+			'desc'      => __( '"Quick view" button label in the WooCommerce loop.', 'yith-woocommerce-quick-view' ),
 			'type'      => 'yith-field',
 			'yith-type' => 'text',
 			'default'   => __( 'Quick View', 'yith-woocommerce-quick-view' ),
@@ -51,38 +43,49 @@ $settings = array(
 			'id'   => 'yith-wcqv-general-options',
 		),
 
-		'style-options'            => array(
-			'title' => __( 'Style Options', 'yith-woocommerce-quick-view' ),
-			'desc'  => '',
+		'content-options' => array(
+			'title' => __( 'Content Options', 'yith-woocommerce-quick-view' ),
 			'type'  => 'title',
-			'id'    => 'yith-wcqv-style-options',
+			'desc'  => '',
+			'id'    => 'yith-wcqv-content-options',
 		),
 
-		'background-color-modal'   => array(
-			'name'      => __( 'Modal Window Background Color', 'yith-woocommerce-quick-view' ),
+		'product-description'  => array(
+			'id'        => 'yith-wcqv-product-description',
+			'name'      => __( 'Product description:', 'yith-woocommerce-quick-view' ),
 			'type'      => 'yith-field',
-			'yith-type' => 'colorpicker',
-			'desc'      => '',
-			'id'        => 'yith-wcqv-background-modal',
-			'default'   => '#ffffff',
+			'yith-type' => 'radio',
+			'default'   => 'short',
+			'options'   => array(
+				'short' => __( 'Show short description', 'yith-woocommerce-quick-view' ),
+				'full'  => __( 'Show full description', 'yith-woocommerce-quick-view' ),
+			),
 		),
 
-		'close-button-color'       => array(
-			'name'      => __( 'Closing Button Color', 'yith-woocommerce-quick-view' ),
-			'type'      => 'yith-field',
-			'yith-type' => 'colorpicker',
-			'desc'      => '',
-			'id'        => 'yith-wcqv-close-color',
-			'default'   => '#cdcdcd',
-		),
-
-		'close-button-color-hover' => array(
-			'name'      => __( 'Closing Button Hover Color', 'yith-woocommerce-quick-view' ),
-			'type'      => 'yith-field',
-			'yith-type' => 'colorpicker',
-			'desc'      => '',
-			'id'        => 'yith-wcqv-close-color-hover',
-			'default'   => '#ff0000',
+		'image-option' => array(
+			'id'         => 'yith-quick-view-product-image-dimensions',
+			'title'      => __( 'Product image dimensions', 'yith-woocommerce-quick-view' ),
+			'desc'       => sprintf( _x( 'Set the image size (in px). After changing these settings you may need to %sregenerate your thumbnails%s.', 'placeholders are html tags', 'yith-woocommerce-quick-view' ), '<a href="https://wordpress.org/plugins/regenerate-thumbnails/">', '</a>' ),
+			'type'       => 'yith-field',
+			'yith-type'  => 'dimensions',
+			'dimensions' => array(
+				'width'  => __( 'Width', 'yith-woocommerce-quick-view' ),
+				'height' => __( 'Height', 'yith-woocommerce-quick-view' ),
+			),
+			'units'      => array( 'px' => 'px' ),
+			'default'    => array(
+				'dimensions' => array(
+					'width'  => 450,
+					'height' => 600,
+				),
+				'unit'       => 'px',
+				'linked'     => 'no',
+			),
+			'min'        => 1,
+			'deps'       => array(
+				'id'    => 'yith-wcqv-product-show-thumb',
+				'value' => 'yes',
+			),
 		),
 
 		'style-options-end'        => array(

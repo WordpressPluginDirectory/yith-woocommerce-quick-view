@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Admin class
  *
@@ -59,13 +59,6 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 		 */
 		protected $premium = 'premium.php';
 
-		/**
-		 * Premium version landing link
-		 *
-		 * @since 1.0.0
-		 * @var string
-		 */
-		protected $premium_landing = 'https://yithemes.com/themes/plugins/yith-woocommerce-quick-view/';
 
 		/**
 		 * Quick View panel page
@@ -103,9 +96,7 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 			// Add action links.
 			add_filter( 'plugin_action_links_' . plugin_basename( YITH_WCQV_DIR . '/' . basename( YITH_WCQV_FILE ) ), array( $this, 'action_links' ) );
 			add_filter( 'yith_show_plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 5 );
-
-			add_action( 'yith_quick_view_premium', array( $this, 'premium_tab' ) );
-
+			add_action('admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 			// YITH WCQV Loaded!
 			do_action( 'yith_wcqv_loaded' );
 
@@ -140,12 +131,24 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 				return;
 			}
 
-			$admin_tabs = array(
-				'settings' => __( 'Settings', 'yith-woocommerce-quick-view' ),
-				'premium'  => __( 'Premium Version', 'yith-woocommerce-quick-view' ),
+			$admin_tabs = apply_filters(
+				'yith_wcqv_admin_tabs',
+				array(
+					'settings' => array(
+						'title'       => __( 'General settings', 'yith-woocommerce-quick-view' ),
+						'icon'        => 'settings',
+						'description' => __( 'Set the general behaviour of the plugin.', 'yith-woocommerce-quick-view' ),
+					),
+					'style' => array(
+						'title'       => __( 'Customization', 'yith-woocommerce-quick-view' ),
+						'icon'        => '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 11.25l1.5 1.5.75-.75V8.758l2.276-.61a3 3 0 10-3.675-3.675l-.61 2.277H12l-.75.75 1.5 1.5M15 11.25l-8.47 8.47c-.34.34-.8.53-1.28.53s-.94.19-1.28.53l-.97.97-.75-.75.97-.97c.34-.34.53-.8.53-1.28s.19-.94.53-1.28L12.75 9M15 11.25L12.75 9"></path></svg>',
+						'description' => __( 'Configure style options for the quick view content.', 'yith-woocommerce-quick-view' ),
+					),
+				)
 			);
 
 			$args = array(
+				'ui_version'       => 2,
 				'create_menu_page' => true,
 				'parent_slug'      => '',
 				'page_title'       => 'YITH WooCommerce Quick View',
@@ -159,6 +162,9 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 				'class'            => yith_set_wrapper_class(),
 				'plugin_slug'      => YITH_WCQV_SLUG,
 				'is_free'          => true,
+				'premium_tab'      => array(
+					'features' => $this->get_premium_features(),
+				),
 			);
 
 			/* === Fixed: not updated theme  === */
@@ -169,21 +175,6 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 			$this->panel = new YIT_Plugin_Panel_WooCommerce( $args );
 		}
 
-		/**
-		 * Premium Tab Template
-		 *
-		 * Load the premium tab template on admin page
-		 *
-		 * @since    1.0
-		 * @return   void
-		 */
-		public function premium_tab() {
-			$premium_tab_template = YITH_WCQV_TEMPLATE_PATH . '/admin/' . $this->premium;
-			if ( file_exists( $premium_tab_template ) ) {
-				include_once $premium_tab_template;
-			}
-
-		}
 
 		/**
 		 * Plugin Row Meta
@@ -213,16 +204,59 @@ if ( ! class_exists( 'YITH_WCQV_Admin' ) ) {
 			return $new_row_meta_args;
 		}
 
+
 		/**
-		 * Get the premium landing uri
+		 * Get premium tab features array
 		 *
-		 * @since   1.0.0
-		 * @return  string The premium landing link
+		 * @since 2.0.0
+		 * @return array
 		 */
-		public function get_premium_landing_uri() {
-			return apply_filters( 'yith_plugin_fw_premium_landing_uri', $this->premium_landing, YITH_WCQV_SLUG );
+		protected function get_premium_features() {
+			return array(
+
+				array(
+					'title'       => __( 'Use an icon and show the button when hovering over the product image', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'Choose whether to show the product preview button when hovering over the product image and replace the text with the default icon or a custom icon.', 'yith-woocommerce-quick-view' ),
+				),
+				array(
+					'title'       => __( '2 additional styles for Quick View: sliding panel and on-page preview', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'The premium version includes two additional types of layouts for the product preview: the first opens the product tab directly on the page, in a pop-up section, and the second is a side panel that opens to the right of the browser window.   ', 'yith-woocommerce-quick-view' ),
+				),
+				array(
+					'title'       => __( 'Choose which product information to show in the Quick View', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'We offer you maximum versatility when it comes to the information you want to show in the Quick View. You can choose to show the gallery or a slider with all the product images, the description (short or long, your choice), the rating, the price, the meta (categories, SKUs, etc.), the “Add to cart” button, a link to take the user to the details page (if they want to know more), and much more.', 'yith-woocommerce-quick-view' ),
+				),
+				array(
+					'title'       => __( 'Enable cross-product navigation', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'With cross-product navigation, you can allow your customers to easily and instantly view the tabs of multiple products without having to close the Quick View window.', 'yith-woocommerce-quick-view' ),
+				),
+				array(
+					'title'       => __( 'Allow sharing product previews on social media', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'Allow your customers to easily share product previews with the appropriate social icons. ', 'yith-woocommerce-quick-view' ),
+				),
+				array(
+					'title'       => __( 'Use the shortcode or block to insert a preview of a specific product anywhere in your store', 'yith-woocommerce-quick-view' ),
+					'description' => esc_html__( 'The Gutenberg shortcode and block included in the plugin allows you to insert the preview button for a specific product anywhere in your store: the perfect solution if you want to provide a quick overview of the product in a blog article, landing page, header, etc.', 'yith-woocommerce-quick-view' ),
+				),
+
+			);
 		}
 
+		/**
+		 * Enqueue admin scripts
+		 *
+		 * @param $hook
+		 *
+		 * @return void
+		 */
+		public function enqueue_admin_scripts( $hook) {
+		//	wp_register_script('yith-wcqv-admin', yit_load_js_file(YITH_WCQV_ASSETS_URL.'/js/admin.js'), array('jquery'), YITH_WCQV_VERSION );
+			if ( $hook !== 'yith-plugins_page_yith_wcqv_panel' ) {
+				return;
+			}
+		//	wp_enqueue_script('yith-wcqv-admin');
+			wp_enqueue_style( 'yith-wcqv-admin', YITH_WCQV_ASSETS_URL . '/css/yith-quick-view-admin.css', array(), YITH_WCQV_VERSION );
+		}
 	}
 }
 /**

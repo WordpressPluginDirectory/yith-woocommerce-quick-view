@@ -1,4 +1,5 @@
-<?php
+<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+
 /**
  * Frontend class
  *
@@ -72,6 +73,7 @@ if ( ! class_exists( 'YITH_WCQV_Frontend' ) ) {
 
 			// Load action for product template.
 			$this->yith_quick_view_action_template();
+
 			// Add quick view button.
 			add_action( 'init', array( $this, 'add_button' ) );
 
@@ -94,14 +96,32 @@ if ( ! class_exists( 'YITH_WCQV_Frontend' ) ) {
 			wp_enqueue_script( 'yith-wcqv-frontend' );
 			wp_enqueue_style( 'yith-quick-view', YITH_WCQV_ASSETS_URL . '/css/yith-quick-view.css', array(), $this->version );
 
-			$background_modal  = get_option( 'yith-wcqv-background-modal', '#ffffff' );
-			$close_color       = get_option( 'yith-wcqv-close-color', '#cdcdcd' );
-			$close_color_hover = get_option( 'yith-wcqv-close-color-hover', '#ff0000' );
+
+			$modal_color = get_option( 'yith-wcqv-color-quick-view', array('content'=> '#fff', 'overlay'=>'rgba( 0, 0, 0, 0.8)'));
+			$close_color = get_option('yith-wcqv-closed-button', array('color'=>'#bcbcbc', 'color-hover'=>'rgba( 0, 0, 0, 0.9)'));
+			$image_dimensions = get_option(
+				'yith-quick-view-product-image-dimensions',
+				array(
+					'dimensions' => array(
+						'width'  => 500,
+						'height' => 500,
+					),
+					'unit'       => 'px',
+					'linked'     => 'no',
+				)
+			);
+			$image_w          = $image_dimensions['dimensions']['width'] ?? 450;
+			$image_h          = $image_dimensions['dimensions']['height'] ?? 600;
+			$content_w        = 1000;
+			$content_h        = 600;
+			$image_res        = ( 100 * $image_w ) / $content_w;
+			$summary_w        = 100 - $image_res;
 
 			$inline_style = "
-				#yith-quick-view-modal .yith-wcqv-main{background:{$background_modal};}
-				#yith-quick-view-close{color:{$close_color};}
-				#yith-quick-view-close:hover{color:{$close_color_hover};}";
+				#yith-quick-view-modal .yith-quick-view-overlay{background:{$modal_color['overlay']}}
+				#yith-quick-view-modal .yith-wcqv-main{background:{$modal_color['content']};}
+				#yith-quick-view-close{color:{$close_color['color']};}
+				#yith-quick-view-close:hover{color:{$close_color['color-hover']};}";
 
 			wp_add_inline_style( 'yith-quick-view', $inline_style );
 		}
@@ -255,6 +275,7 @@ if ( ! class_exists( 'YITH_WCQV_Frontend' ) ) {
 					'ajaxurl' => admin_url( 'admin-ajax.php', 'relative' ),
 					'loader'  => apply_filters( 'yith_quick_view_loader_gif', YITH_WCQV_ASSETS_URL . '/image/qv-loader.gif' ),
 					'lang'    => defined( 'ICL_LANGUAGE_CODE' ) ? ICL_LANGUAGE_CODE : '',
+					'is_mobile' => wp_is_mobile(),
 				)
 			);
 
@@ -338,16 +359,42 @@ if ( ! class_exists( 'YITH_WCQV_Frontend' ) ) {
 
 			// Image.
 			add_action( 'yith_wcqv_product_image', 'woocommerce_show_product_sale_flash', 10 );
-			add_action( 'yith_wcqv_product_image', 'woocommerce_show_product_images', 20 );
+			//add_action( 'yith_wcqv_product_image', 'woocommerce_show_product_images', 20 );
+			add_action( 'yith_wcqv_product_image', array( $this, 'custom_thumb_html' ) );
 
 			// Summary.
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_title', 5 );
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_rating', 10 );
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_price', 15 );
+
+			$description = get_option( 'yith-wcqv-product-description', 'short' ) ;
+			if ( 'short' === $description ) {
+				add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_excerpt', 20 );
+			} else {
+				add_action( 'yith_wcqv_product_summary', array( $this, 'get_full_description' ), 20 );
+			}
+
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_excerpt', 20 );
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_add_to_cart', 25 );
 			add_action( 'yith_wcqv_product_summary', 'woocommerce_template_single_meta', 30 );
+
+			add_action( 'yith_wcqv_product_summary', array( $this, 'show_add_to_cart_for_single_variation' ), 25 );
 		}
+
+		/**
+		 * Compatibility with YITH WooCommerce Color and Label Variations
+		 * Get template for add to cart button in case of single variation
+		 *
+		 * @since 1.0.0
+		 */
+		public function show_add_to_cart_for_single_variation() {
+			global $product;
+
+			if ( $product instanceof WC_Product_Variation ) {
+				wc_get_template( 'variation.php', array(), '', YITH_WCQV_DIR . 'templates/add-to-cart/' );
+			}
+		}
+
 
 		/**
 		 * Get Quick View button label
@@ -427,6 +474,139 @@ if ( ! class_exists( 'YITH_WCQV_Frontend' ) ) {
 			echo '</div>';
 			$button = ob_get_clean();
 			return $add_to_cart . $button;
+		}
+
+		/**
+		 * Print custom image thumb html instead of WooCommerce standard
+		 *
+		 * @access public
+		 *
+		 * @param array $attachments_ids An array of attachment ids.
+		 *
+		 * @since  1.0.7
+		 */
+		public function custom_thumb_html( $attachments_ids = array() ) {
+			global $post, $product;
+
+			// If product is null get post.
+			if ( null === $product && $post ) {
+				$product = wc_get_product( $post->ID );
+			}
+
+			/**
+			 * APPLY_FILTERS: yith_wcqv_skip_custom_thumb_html
+			 *
+			 * Enable/disable product image inside quick view.
+			 *
+			 * @param bool $enable
+			 *
+			 * @return bool
+			 */
+			if ( ! $product || apply_filters( 'yith_wcqv_skip_custom_thumb_html', false ) ) {
+				return;
+			}
+
+			/**
+			 * APPLY_FILTERS: yith_wcqv_get_main_image_id
+			 *
+			 * Filters the ID of image used for the product inside quick view.
+			 *
+			 * @param int $image_id
+			 * @param int $product_id
+			 *
+			 * @return int
+			 */
+			$main_image_id = apply_filters( 'yith_wcqv_get_main_image_id', $product->get_image_id(), $product->get_id() );
+			// Collect images.
+			$this->product_images = array_merge( array( $main_image_id ), (array) $attachments_ids );
+			// Prevent empty values.
+			$this->product_images = array_filter( $this->product_images );
+			// Prevent double values.
+			$this->product_images = array_unique( $this->product_images );
+
+
+			$class = 'classic';
+			$html = '<div class="images '.$class.'">';
+				// Main image.
+				$image_title   = esc_attr( get_the_title( $main_image_id ) );
+				$image_caption = get_post( $main_image_id )->post_excerpt;
+				$image_link    = wp_get_attachment_url( $main_image_id );
+				// Check to use or not get image method for prevent https error on certain configuration.
+				$use_get_image = apply_filters( 'yith_wcqv_use_get_image_method', true );
+				if ( $use_get_image ) {
+					$image = $product->get_image(
+						'quick_view_image_size',
+						array(
+							'title' => $image_title,
+							'alt'   => $image_title,
+						)
+					);
+				} else {
+					$product_id = yit_get_base_product_id( $product );
+					$image      = get_the_post_thumbnail(
+						$product_id,
+						'quick_view_image_size',
+						array(
+							'title' => $image_title,
+							'alt'   => $image_title,
+						)
+					);
+
+
+				}
+
+				$html .= '<a href="' . esc_url( $image_link ) . '" itemprop="image" class="woocommerce-main-image zoom" title="' . esc_attr( $image_caption ) . '" data-rel="prettyPhoto[product-gallery]">' . $image . '</a>';
+
+
+
+
+			$html .= '</div>';
+
+			// Let's third part filter html.
+			/**
+			 * APPLY_FILTERS: yith_wcqv_product_image_html
+			 *
+			 * Filters the HTML used for the product image inside quick view.
+			 *
+			 * @param string $html Product image HTML.
+			 *
+			 * @return string
+			 */
+			$html = apply_filters( 'yith_wcqv_product_image_html', $html );
+
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		/**
+		 * Get full description instead of short
+		 *
+		 * @access public
+		 * @since  1.0.7
+		 */
+		public function get_full_description() {
+			ob_start();
+			?>
+			<div itemprop="description">
+				<?php
+				/**
+				 * APPLY_FILTERS: yith_wcqv_product_description
+				 *
+				 * Filters the product description shown inside the quick view.
+				 *
+				 * @param string $description the product description
+				 *
+				 * @return string
+				 */
+				$content = apply_filters( 'yith_wcqv_product_description', get_the_content() );
+				global $wp_embed;
+				// Apply the [embed] shortcode before.
+				$content = ! ! $wp_embed && is_callable( array( $wp_embed, 'run_shortcode' ) ) ? $wp_embed->run_shortcode( $content ) : $content;
+
+				echo do_shortcode( $content );
+				?>
+			</div>
+			<?php
+			echo ob_get_clean();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 }
