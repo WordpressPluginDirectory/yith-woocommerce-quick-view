@@ -4,7 +4,7 @@ Tags: woocommerce, quick view, woocommerce quick view, products quick view
 Requires PHP: 7.4
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,7 +52,7 @@ But if you're looking for advanced options and more versatility, we recommend **
 * Enable product navigation
 * Choose which product information to show or hide (image, name, rating, price, “Add to cart” button, etc.)
 * Choose whether to hide the product image gallery, show it in a classic style, or enable a slider
-* Display a link or a button to redirect the user to the product detail page
+* Display a link to redirect the user to the product detail page
 * Choose whether to close the Quick View or redirect the user to the Checkout page after adding the product to the cart
 * Enable social icons to share the product Quick View
 * Customize the “Add to cart” button
@@ -79,6 +79,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. The quick view modal.
 
 == Changelog ==
+
+= 2.1.0 = Released 16 December 2024
+* New: support for WooCommerce 9.5
+* Update: YITH plugin framework
+
 = 2.0.0 = Released 19 November 2024
 * New: support for WordPress 6.7
 * New: support for WooCommerce 9.4

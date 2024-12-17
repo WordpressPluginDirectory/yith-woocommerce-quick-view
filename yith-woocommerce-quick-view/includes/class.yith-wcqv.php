@@ -63,9 +63,6 @@ if ( ! class_exists( 'YITH_WCQV' ) ) {
 		 */
 		public function __construct() {
 
-			// Load Plugin Framework.
-			add_action( 'after_setup_theme', array( $this, 'plugin_fw_loader' ), 1 );
-
 			if ( $this->can_load() ) {
 				if ( $this->is_admin() ) {
 					require_once 'class.yith-wcqv-admin.php';
@@ -126,24 +123,6 @@ if ( ! class_exists( 'YITH_WCQV' ) ) {
 		public function load_frontend() {
 			$enable_on_mobile = get_option( 'yith-wcqv-enable-mobile', 'yes' ) === 'yes';
 			return apply_filters( 'yith_wcqv_load_frontend', ! wp_is_mobile() || $enable_on_mobile );
-		}
-
-
-		/**
-		 * Load Plugin Framework
-		 *
-		 * @since  1.0
-		 * @access public
-		 * @return void
-		 */
-		public function plugin_fw_loader() {
-			if ( ! defined( 'YIT_CORE_PLUGIN' ) ) {
-				global $plugin_fw_data;
-				if ( ! empty( $plugin_fw_data ) ) {
-					$plugin_fw_file = array_shift( $plugin_fw_data );
-					require_once $plugin_fw_file;
-				}
-			}
 		}
 
 
